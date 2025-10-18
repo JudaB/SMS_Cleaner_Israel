@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="SMS Cleaner Israel"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:layout_marginBottom="16dp" />
+
+    <TextView
+        android:id="@+id/tvStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Ready to read SMS messages"
+        android:textSize="16sp"
+        android:gravity="center"
+        android:layout_marginBottom="16dp" />
+
+    <Button
+        android:id="@+id/btnReadSms"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Read SMS Messages"
+        android:textSize="16sp"
+        android:layout_marginBottom="8dp" />
+
+    <Button
+        android:id="@+id/btnSetDefault"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Set as Default SMS App (Required for Deletion)"
+        android:textSize="14sp"
+        android:background="@android:color/holo_blue_dark"
+        android:textColor="@android:color/white"
+        android:layout_marginBottom="8dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:elevation="4dp" />
+
+    <Button
+        android:id="@+id/btnOpenSettings"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Open Default Apps Settings (Alternative)"
+        android:textSize="12sp"
+        android:background="@android:color/holo_orange_dark"
+        android:textColor="@android:color/white"
+        android:layout_marginBottom="8dp" />
+
+    <Button
+        android:id="@+id/btnAutoDelete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Auto Delete: בעל עסק הודעה חשובה"
+        android:textSize="14sp"
+        android:background="@android:color/holo_red_dark"
+        android:textColor="@android:color/white"
+        android:layout_marginBottom="8dp" />
+
+    <Button
+        android:id="@+id/btnAutoDeleteLoan"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Auto Delete: הלוואה"
+        android:textSize="14sp"
+        android:background="@android:color/holo_red_dark"
+        android:textColor="@android:color/white"
+        android:layout_marginBottom="8dp" />
+
+    <Button
+        android:id="@+id/btnAutoDeleteMedical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Auto Delete: שקיות רפואי"
+        android:textSize="14sp"
+        android:background="@android:color/holo_red_dark"
+        android:textColor="@android:color/white"
+        android:layout_marginBottom="16dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Filtered Messages (הלוואה, יד שרה, נמצאת זכאי לקרן הלוואה, שקיות רפואי, מבצע):"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="4dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Tip: Use 'Hide (Recommended)' button for reliable message removal"
+        android:textSize="12sp"
+        android:textColor="@android:color/darker_gray"
+        android:gravity="center"
+        android:layout_marginBottom="8dp" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewSms"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+</LinearLayout>
