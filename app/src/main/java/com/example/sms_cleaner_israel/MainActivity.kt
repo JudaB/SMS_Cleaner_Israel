@@ -21,11 +21,13 @@ import java.util.*
 class MainActivity : AppCompatActivity() {
     
     private lateinit var readSmsButton: Button
+    private lateinit var readSmsButton2: Button
     private lateinit var setDefaultButton: Button
     private lateinit var openSettingsButton: Button
     private lateinit var autoDeleteButton: Button
     private lateinit var autoDeleteLoanButton: Button
     private lateinit var autoDeleteMedicalButton: Button
+    private lateinit var autoDeleteDealButton: Button
     private lateinit var smsRecyclerView: RecyclerView
     private lateinit var statusText: TextView
     private lateinit var smsAdapter: SmsAdapter
@@ -38,9 +40,15 @@ class MainActivity : AppCompatActivity() {
         "מבצע"
     )
     
+    private val targetKeywords2 = listOf(
+        "חשבונית",
+        "קבלה"
+    )
+    
     private val autoDeleteKeyword = "בעל עסק הודעה חשובה"
     private val autoDeleteLoanKeyword = "הלוואה"
     private val autoDeleteMedicalKeyword = "שקיות רפואי"
+    private val autoDeleteDealKeyword = "מבצע"
     private val smsList = mutableListOf<SmsMessage>()
     private val smsIdList = mutableListOf<Long>() // Store SMS IDs for deletion
     
@@ -59,11 +67,13 @@ class MainActivity : AppCompatActivity() {
     
     private fun initializeViews() {
         readSmsButton = findViewById(R.id.btnReadSms)
+        readSmsButton2 = findViewById(R.id.btnReadSms2)
         setDefaultButton = findViewById(R.id.btnSetDefault)
         openSettingsButton = findViewById(R.id.btnOpenSettings)
         autoDeleteButton = findViewById(R.id.btnAutoDelete)
         autoDeleteLoanButton = findViewById(R.id.btnAutoDeleteLoan)
         autoDeleteMedicalButton = findViewById(R.id.btnAutoDeleteMedical)
+        autoDeleteDealButton = findViewById(R.id.btnAutoDeleteDeal)
         smsRecyclerView = findViewById(R.id.recyclerViewSms)
         statusText = findViewById(R.id.tvStatus)
         
@@ -75,6 +85,8 @@ class MainActivity : AppCompatActivity() {
         
         // Ensure buttons are enabled and clickable
         readSmsButton.isEnabled = true
+        readSmsButton2.isEnabled = true
+        readSmsButton2.isClickable = true
         setDefaultButton.isEnabled = true
         setDefaultButton.isClickable = true
         openSettingsButton.isEnabled = true
@@ -85,10 +97,20 @@ class MainActivity : AppCompatActivity() {
         autoDeleteLoanButton.isClickable = true
         autoDeleteMedicalButton.isEnabled = true
         autoDeleteMedicalButton.isClickable = true
+        autoDeleteDealButton.isEnabled = true
+        autoDeleteDealButton.isClickable = true
         
         readSmsButton.setOnClickListener {
             if (hasSmsPermission()) {
                 readSmsMessages()
+            } else {
+                requestSmsPermission()
+            }
+        }
+        
+        readSmsButton2.setOnClickListener {
+            if (hasSmsPermission()) {
+                readSmsMessages2()
             } else {
                 requestSmsPermission()
             }
@@ -117,6 +139,11 @@ class MainActivity : AppCompatActivity() {
         autoDeleteMedicalButton.setOnClickListener {
             Toast.makeText(this, "Starting auto delete for: $autoDeleteMedicalKeyword", Toast.LENGTH_SHORT).show()
             autoDeleteMedicalMessages()
+        }
+        
+        autoDeleteDealButton.setOnClickListener {
+            Toast.makeText(this, "Starting auto delete for: $autoDeleteDealKeyword", Toast.LENGTH_SHORT).show()
+            autoDeleteDealMessages()
         }
         
         // Debug: Test if button is working
@@ -239,9 +266,75 @@ class MainActivity : AppCompatActivity() {
         }
     }
     
+    private fun readSmsMessages2() {
+        smsList.clear()
+        smsIdList.clear()
+        statusText.text = "Reading SMS messages for invoices and receipts..."
+        
+        try {
+            val uri = Uri.parse("content://sms/inbox")
+            val cursor: Cursor? = contentResolver.query(
+                uri,
+                arrayOf(
+                    Telephony.Sms._ID,
+                    Telephony.Sms.ADDRESS,
+                    Telephony.Sms.BODY,
+                    Telephony.Sms.DATE,
+                    Telephony.Sms.TYPE
+                ),
+                null,
+                null,
+                "${Telephony.Sms.DATE} DESC"
+            )
+            
+            cursor?.use { c ->
+                val idIndex = c.getColumnIndex(Telephony.Sms._ID)
+                val addressIndex = c.getColumnIndex(Telephony.Sms.ADDRESS)
+                val bodyIndex = c.getColumnIndex(Telephony.Sms.BODY)
+                val dateIndex = c.getColumnIndex(Telephony.Sms.DATE)
+                val typeIndex = c.getColumnIndex(Telephony.Sms.TYPE)
+                
+                while (c.moveToNext()) {
+                    val id = c.getLong(idIndex)
+                    val address = c.getString(addressIndex) ?: "Unknown"
+                    val body = c.getString(bodyIndex) ?: ""
+                    val date = c.getLong(dateIndex)
+                    val type = c.getInt(typeIndex)
+                    
+                    // Filter messages containing target keywords for invoices and receipts
+                    if (containsTargetKeywords2(body)) {
+                        val smsMessage = SmsMessage(
+                            id = id,
+                            address = address,
+                            body = body,
+                            date = date,
+                            type = type
+                        )
+                        smsList.add(smsMessage)
+                        smsIdList.add(id)
+                    }
+                }
+            }
+            
+            smsAdapter.notifyDataSetChanged()
+            statusText.text = "Found ${smsList.size} messages containing invoice/receipt keywords"
+            
+        } catch (e: Exception) {
+            statusText.text = "Error reading SMS: ${e.message}"
+            Toast.makeText(this, "Error reading SMS messages", Toast.LENGTH_SHORT).show()
+        }
+    }
+    
     private fun containsTargetKeywords(text: String): Boolean {
         val lowerText = text.lowercase()
         return targetKeywords.any { keyword ->
+            lowerText.contains(keyword.lowercase())
+        }
+    }
+    
+    private fun containsTargetKeywords2(text: String): Boolean {
+        val lowerText = text.lowercase()
+        return targetKeywords2.any { keyword ->
             lowerText.contains(keyword.lowercase())
         }
     }
@@ -581,6 +674,83 @@ class MainActivity : AppCompatActivity() {
             // Show count of found messages
             statusText.text = "Found $foundCount messages with keyword: $autoDeleteMedicalKeyword"
             Toast.makeText(this, "Found $foundCount messages containing '$autoDeleteMedicalKeyword'. Starting deletion...", Toast.LENGTH_LONG).show()
+            
+            // Second pass: Delete the messages
+            var deletedCount = 0
+            for ((id, address) in messagesToDelete) {
+                try {
+                    val deletedRows = contentResolver.delete(
+                        uri,
+                        "${Telephony.Sms._ID} = ?",
+                        arrayOf(id.toString())
+                    )
+                    
+                    if (deletedRows > 0) {
+                        deletedCount++
+                        Toast.makeText(this, "Deleted message from: $address", Toast.LENGTH_SHORT).show()
+                    }
+                } catch (e: Exception) {
+                    Toast.makeText(this, "Failed to delete message from $address: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+            
+            statusText.text = "Auto delete complete. Found: $foundCount, Deleted: $deletedCount"
+            Toast.makeText(this, "Auto delete complete! Found: $foundCount, Deleted: $deletedCount", Toast.LENGTH_LONG).show()
+            
+        } catch (e: Exception) {
+            statusText.text = "Auto delete error: ${e.message}"
+            Toast.makeText(this, "Auto delete error: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
+    }
+    
+    private fun autoDeleteDealMessages() {
+        statusText.text = "Searching for messages containing: $autoDeleteDealKeyword"
+        
+        try {
+            val uri = Uri.parse("content://sms")
+            val cursor: Cursor? = contentResolver.query(
+                uri,
+                arrayOf(
+                    Telephony.Sms._ID,
+                    Telephony.Sms.ADDRESS,
+                    Telephony.Sms.BODY,
+                    Telephony.Sms.DATE,
+                    Telephony.Sms.TYPE
+                ),
+                null,
+                null,
+                "${Telephony.Sms.DATE} DESC"
+            )
+            
+            var foundCount = 0
+            val messagesToDelete = mutableListOf<Pair<Long, String>>() // ID and sender
+            
+            // First pass: Count and collect messages to delete
+            cursor?.use { c ->
+                val idIndex = c.getColumnIndex(Telephony.Sms._ID)
+                val addressIndex = c.getColumnIndex(Telephony.Sms.ADDRESS)
+                val bodyIndex = c.getColumnIndex(Telephony.Sms.BODY)
+                val dateIndex = c.getColumnIndex(Telephony.Sms.DATE)
+                val typeIndex = c.getColumnIndex(Telephony.Sms.TYPE)
+                
+                while (c.moveToNext()) {
+                    val id = c.getLong(idIndex)
+                    val address = c.getString(addressIndex) ?: "Unknown"
+                    val body = c.getString(bodyIndex) ?: ""
+                    val date = c.getLong(dateIndex)
+                    val type = c.getInt(typeIndex)
+                    
+                    // Check if message contains the auto delete keyword
+                    if (body.lowercase().contains(autoDeleteDealKeyword.lowercase())) {
+                        foundCount++
+                        messagesToDelete.add(Pair(id, address))
+                    }
+                }
+            }
+            
+            // Show count of found messages
+            statusText.text = "Found $foundCount messages with keyword: $autoDeleteDealKeyword"
+            Toast.makeText(this, "Found $foundCount messages containing '$autoDeleteDealKeyword'. Starting deletion...", Toast.LENGTH_LONG).show()
             
             // Second pass: Delete the messages
             var deletedCount = 0

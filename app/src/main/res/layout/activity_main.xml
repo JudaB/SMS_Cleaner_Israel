@@ -34,6 +34,16 @@
         android:layout_marginBottom="8dp" />
 
     <Button
+        android:id="@+id/btnReadSms2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Read Messages 2 (חשבונית, קבלה)"
+        android:textSize="16sp"
+        android:background="@android:color/holo_green_dark"
+        android:textColor="@android:color/white"
+        android:layout_marginBottom="8dp" />
+
+    <Button
         android:id="@+id/btnSetDefault"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -81,6 +91,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Auto Delete: שקיות רפואי"
+        android:textSize="14sp"
+        android:background="@android:color/holo_red_dark"
+        android:textColor="@android:color/white"
+        android:layout_marginBottom="8dp" />
+
+    <Button
+        android:id="@+id/btnAutoDeleteDeal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Auto Delete: מבצע"
         android:textSize="14sp"
         android:background="@android:color/holo_red_dark"
         android:textColor="@android:color/white"
