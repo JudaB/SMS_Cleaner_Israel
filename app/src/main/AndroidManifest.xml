@@ -10,6 +10,12 @@
     <uses-permission android:name="android.permission.RECEIVE_WAP_PUSH" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
+    
+    <!-- SMS Role Permission for Android 10+ -->
+    <uses-permission android:name="android.permission.ROLE_SMS" />
+    
+    <!-- Declare SMS app capability -->
+    <uses-feature android:name="android.hardware.telephony" android:required="true" />
 
     <application
         android:allowBackup="true"
@@ -19,7 +25,9 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.SMS_Cleaner_Israel">
+        android:theme="@style/Theme.SMS_Cleaner_Israel"
+        android:requestLegacyExternalStorage="true"
+        android:name=".SmsApplication">
         
         <activity
             android:name=".MainActivity"
@@ -28,7 +36,44 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <!-- SMS Intent Filters for Default SMS App -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <action android:name="android.intent.action.SENDTO" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="sms" />
+                <data android:scheme="smsto" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="sms" />
+                <data android:scheme="smsto" />
+            </intent-filter>
+            <!-- SMS Role Declaration for Android 10+ -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.SEND" />
+                <action android:name="android.intent.action.SENDTO" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="sms" />
+                <data android:scheme="smsto" />
+                <data android:scheme="mms" />
+                <data android:scheme="mmsto" />
+            </intent-filter>
         </activity>
+
+        <!-- Settings Activity -->
+        <activity
+            android:name=".SettingsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.SMS_Cleaner_Israel" />
+
+        <!-- Default SMS Instruction Activity -->
+        <activity
+            android:name=".DefaultSmsInstructionActivity"
+            android:exported="false"
+            android:theme="@style/Theme.SMS_Cleaner_Israel" />
 
         <!-- SMS Compose Activity -->
         <activity
@@ -98,6 +143,23 @@
                 <data android:scheme="mmsto" />
             </intent-filter>
         </service>
+        
+        <!-- SMS Role Declaration for Android 10+ -->
+        <activity-alias
+            android:name=".SmsRoleHandler"
+            android:targetActivity=".MainActivity"
+            android:exported="true"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <action android:name="android.intent.action.SENDTO" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="sms" />
+                <data android:scheme="smsto" />
+                <data android:scheme="mms" />
+                <data android:scheme="mmsto" />
+            </intent-filter>
+        </activity-alias>
         
     </application>
 

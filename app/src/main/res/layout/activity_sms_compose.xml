@@ -9,16 +9,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Compose SMS"
-        android:textSize="24sp"
+        android:textSize="18sp"
         android:textStyle="bold"
-        android:gravity="center"
         android:layout_marginBottom="16dp" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="To:"
-        android:textSize="16sp"
+        android:text="Recipient:"
+        android:textSize="14sp"
         android:layout_marginBottom="8dp" />
 
     <EditText
@@ -33,7 +32,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Message:"
-        android:textSize="16sp"
+        android:textSize="14sp"
         android:layout_marginBottom="8dp" />
 
     <EditText
@@ -44,7 +43,6 @@
         android:hint="Enter your message"
         android:inputType="textMultiLine"
         android:gravity="top"
-        android:minLines="5"
         android:layout_marginBottom="16dp" />
 
     <LinearLayout
@@ -53,21 +51,19 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/btnBack"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Back"
-            android:layout_marginEnd="8dp" />
-
-        <Button
             android:id="@+id/btnSend"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Send SMS"
-            android:background="@android:color/holo_blue_dark"
-            android:textColor="@android:color/white"
+            android:text="Send"
+            android:layout_marginEnd="8dp" />
+
+        <Button
+            android:id="@+id/btnCancel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Cancel"
             android:layout_marginStart="8dp" />
 
     </LinearLayout>

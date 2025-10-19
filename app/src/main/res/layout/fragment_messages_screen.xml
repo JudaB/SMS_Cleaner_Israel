@@ -3,31 +3,31 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="8dp">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="SMS Conversation"
+        android:text="Filtered Messages"
         android:textSize="18sp"
         android:textStyle="bold"
-        android:layout_marginBottom="16dp" />
+        android:gravity="center"
+        android:layout_marginBottom="8dp" />
 
-    <TextView
-        android:id="@+id/tvConversation"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewSms"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:text="Conversation will appear here"
-        android:textSize="14sp"
-        android:background="@android:color/white"
-        android:padding="8dp"
-        android:layout_marginBottom="16dp" />
+        android:layout_weight="1" />
 
-    <Button
-        android:id="@+id/btnBack"
+    <!-- Swipe instruction -->
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Back" />
+        android:text="← Swipe right to go back →"
+        android:textSize="12sp"
+        android:gravity="center"
+        android:textStyle="italic"
+        android:layout_marginTop="8dp" />
 
 </LinearLayout>
